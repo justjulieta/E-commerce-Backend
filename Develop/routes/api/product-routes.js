@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const { Product, Category, Tag, ProductTag } = require('../../models');
 
-// get all products
+// get all products + its associated category & tag data
 router.get('/', (req, res) => {
   try {
     const productData = await Product.findAll({
@@ -11,10 +11,9 @@ router.get('/', (req, res) => {
   } catch (err) {
     res.status(500).json(err);
   }
-  // be sure to include its associated Category and Tag data
 });
 
-// get one product
+// get one product + its associated category & tag data
 router.get('/:id', (req, res) => {
   try {
     const productData = await Product.findByPk(req.params.id, {
@@ -22,14 +21,13 @@ router.get('/:id', (req, res) => {
       attributes: ['id','product_name', 'price', 'stock,','category_id'],
     })
     if (!productData) {
-      res.status(404).json({ message: 'No product has been found with this ID.'})
+      res.status(404).json({ message: 'No product have been found with this ID.'})
       return;
     }
     res.status(200).json(productData);
   } catch (err) {
     res.status(500).json(err);
   }
-  // be sure to include its associated Category and Tag data
 });
 
 // create new product
@@ -64,16 +62,14 @@ router.post('/', (req, res) => {
     });
 });
 
-// update product
+// update product + its associated category & tag data
 router.put('/:id', (req, res) => {
-  // update product data
   Product.update(req.body, {
     where: {
       id: req.params.id,
     },
   })
     .then((product) => {
-      // find all associated tags from ProductTag
       return ProductTag.findAll({ where: { product_id: req.params.id } });
     })
     .then((productTags) => {
@@ -115,7 +111,7 @@ router.delete('/:id', (req, res) => {
       },
     });
     if (!productData) {
-      res.status(404).json({ message: 'No product has been found with this ID.'})
+      res.status(404).json({ message: 'No product have been found with this ID.'})
       return;
     }
     res.status(200).json(productData);
